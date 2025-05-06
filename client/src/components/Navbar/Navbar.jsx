@@ -39,17 +39,22 @@ const Navbar = () => {
     };
   }, [dropdownOpen]);
 
-  async function getuser() {
+  const [username, setUsername] = useState("");
 
-    const id = localStorage.getItem('id')
-    
-    const data = await axios.get(`http://localhost:3000/api/getuser/${id}`)
+    useEffect(() => {
+      async function getuser() {
+        const id = localStorage.getItem('id');
+        try {
+          const response = await axios.get(`http://localhost:3000/api/getuser/${id}`);
+          setUsername(response.data.username); 
+        } catch (error) {
+          console.error("Failed to fetch user:", error);
+        }
+      }
 
-    console.log(data,"data form getuser")
-    console.log("hello")
-  }
+      getuser();
+    }, []); 
 
-  getuser()
 
   return (
     <nav className="navbar">
@@ -75,7 +80,7 @@ const Navbar = () => {
             className="search-input"
           />
         </div>
-        <span className="welcome-message">Welcome , username</span>
+        <span className="welcome-message">Welcome , {username} </span>
       </div>
       <div className="nav-right">
         <button className="icon-button write-button" onClick={handleWriteClick}>

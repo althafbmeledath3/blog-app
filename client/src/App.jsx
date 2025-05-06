@@ -9,15 +9,26 @@ import Profile from './pages/profile/Profile';
 import Signup from './pages/signup/signup';
 import Login from './pages/login/Login';
 import WriteBlog from './pages/write-section/write';
+import axios from 'axios';
 
 
 
 function App() {
+
+  // async function loadhome(){
+
+  //   const response = await axios.get('http://localhost:3000/api/loadhome')
+
+  //   console.log(response)
+
+  // }
+
+  // loadhome()
  
   return (
 
     <>
-    
+
     <BrowserRouter>
     
       <Navbar />

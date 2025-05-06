@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,14 +21,72 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     // Add login logic here (e.g., API call)
-    console.log("Form Data:", formData);
+    
+    
+    try {
+
+      const response = await axios.post("http://localhost:3000/api/login",{formData})
+
+      if(response.status===200){
+        
+        localStorage.setItem('token',response.data.token)
+
+        toast.success("Login successful! Redirecting to home...", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "dark",
+        });
+
+
+         // Navigate to home after toast completes (3 seconds)
+        setTimeout(() => {
+   
+          navigate("/");
+          }, 3000);
+
+      }
+
+      
+
+      
+    } catch (error) {
+      
+
+      toast.error("Login failed! Invalid useename or password...", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+
+    }
+
   };
 
   return (
     <div style={styles.container}>
+       <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div style={styles.formWrapper}>
         <h2 style={styles.title}>Log In</h2>
         <form onSubmit={handleSubmit} style={styles.form}>

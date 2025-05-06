@@ -68,8 +68,9 @@ export const signUp = async function signUp(req, res) {
 
 
   export const logIn = async function logIn(req, res) {
+
     try {
-      const { email, password } = req.body;
+      const { email, password } = req.body.formData;
   
       const userExist = await userSchema.findOne({ email });
   
@@ -91,6 +92,7 @@ export const signUp = async function signUp(req, res) {
       res.status(200).json({ message: "Logged in success" ,token});
   
     } catch (err) {
+      
       // console.log(err);
       res.status(400).json({ error: err });
     }
