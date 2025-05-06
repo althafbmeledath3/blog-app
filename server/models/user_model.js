@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import userSchema from "../models/user_model.js"
 
 
 //create a schema

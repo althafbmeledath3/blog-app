@@ -1,5 +1,5 @@
 
-
+import userSchema from "../models/user_model.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
@@ -18,50 +18,52 @@ const transporter = nodemailer.createTransport({
 
 export const signUp = async function signUp(req, res) {
 
-
     console.log("hello from signup")
-
-
-    console.log(object)
-
    
-
-    // console.log(req.file)
-
-    // console.log(req.body)
-    // try {
+    try {
         
-    //   // Check if file was uploaded
-    //   if (!req.file) {
-    //     return res.status(400).json({ message: "Profile picture is required" });
-    //   }
-  
-    //   const profile_pic = req.file.path;
-    //   const { username, email, phone, password } = req.body;
-  
-    //   if (!(profile_pic && username && email && phone && password)) {
-    //     return res.status(400).json({ message: "Please fill all the details" ,profile_pic});
-    //   }
-  
-    //   const hashed_pwd = await bcrypt.hash(password, 10);
-  
-    //   // Create the user in the database
-    //   const data = await userSchema.create({
-    //     profile_pic,
-    //     username,
-    //     email,
-    //     phone,
-    //     password: hashed_pwd,
-    //   });
-  
-    //   res.status(201).json({ message: "User Created Successfully" });
-  
-    // } catch (err) {
-    //   // console.error("Error in creating user:", err);
-    //   res.status(400).json({ message: "Error in creating user", error: err.message });
-    // }
-  };
+      // Check if file was uploaded
 
+      if (!req.file) {
+        return res.status(400).json({ message: "Profile picture is required" });
+      }
+  
+      const profile_pic = req.file.path;
+      const { username, email, password } = req.body;
+  
+      if (!(profile_pic && username && email  && password)) {
+        return res.status(400).json({ message: "Please fill all the details" ,profile_pic});
+      }
+  
+      const hashed_pwd = await bcrypt.hash(password, 10);
+  
+      // Create the user in the database
+      const data = await userSchema.create({
+        profile_pic,
+        username,
+        email,
+        password: hashed_pwd,
+      });
+
+
+      const id = data._id.toString()
+
+      const token = await jwt.sign({ id: id}, process.env.JWT_KEY, {
+        expiresIn: "24h",
+
+      });
+
+  
+      res.status(201).json({ message: "User Created Successfully",token,id });
+  
+    } 
+    
+    catch (err) {
+      // console.error("Error in creating user:", err);
+      res.status(400).json({ message: "Error in creating user", error: err.message });
+    }
+
+  };
 
 
 
@@ -86,8 +88,6 @@ export const signUp = async function signUp(req, res) {
         expiresIn: "24h",
       });
 
-      
-
       res.status(200).json({ message: "Logged in success" ,token});
   
     } catch (err) {
@@ -96,3 +96,21 @@ export const signUp = async function signUp(req, res) {
     }
   };
   
+
+
+export const getuser = async function getuser(req,res) {
+
+  console.log("Inside getuser")
+
+  const id = req.params.id
+
+  const data = await userSchema.findById(id)
+
+  if(!data)
+    return res.status(404).json({message:"Not Found"})
+
+  res.status(200).json(data)
+
+}
+
+

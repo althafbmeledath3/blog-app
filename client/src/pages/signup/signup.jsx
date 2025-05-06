@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Signup.css";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -13,12 +17,10 @@ const Signup = () => {
   });
 
   const [profilePicPreview, setProfilePicPreview] = useState(null);
-  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setError(null); // Clear error on input change
   };
 
   const handleFileChange = (e) => {
@@ -38,7 +40,16 @@ const Signup = () => {
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+     
+      toast.error("Passwords do not match", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
       return;
     }
 
@@ -61,19 +72,57 @@ const Signup = () => {
       });
 
       console.log("Signup successful:", response.data);
-      setError(null);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem('id',response.data.id)
+
+      console.log("Triggering success toast");
+      toast.success("Signup successful! Redirecting to home...", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+
+      // Navigate to home after toast completes (3 seconds)
+      setTimeout(() => {
+        console.log("Navigating to /");
+        navigate("/");
+      }, 3000);
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       console.error("Signup error:", errorMessage);
-      setError(errorMessage);
+      console.log("Triggering error toast");
+      toast.error(`Signup failed: ${errorMessage}`, {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
     }
   };
 
   return (
     <div className="signup-page">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div className="form-wrapper">
         <h2 className="title">Sign Up</h2>
-        {error && <p className="error-text">{error}</p>}
         <form onSubmit={handleSubmit} className="form">
           <div className="profile-pic-container">
             <label htmlFor="profile_pic" className="label">

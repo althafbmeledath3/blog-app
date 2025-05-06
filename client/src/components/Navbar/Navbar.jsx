@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./navbar.css";
+import axios from "axios";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,6 +15,11 @@ const Navbar = () => {
   const handleWriteClick = () => {
     navigate('/write');
   };
+
+  const logout = ()=>{
+    localStorage.clear()
+    navigate("/login")
+  }
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -32,6 +38,18 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownOpen]);
+
+  async function getuser() {
+
+    const id = localStorage.getItem('id')
+    
+    const data = await axios.get(`http://localhost:3000/api/getuser/${id}`)
+
+    console.log(data,"data form getuser")
+    console.log("hello")
+  }
+
+  getuser()
 
   return (
     <nav className="navbar">
@@ -57,6 +75,7 @@ const Navbar = () => {
             className="search-input"
           />
         </div>
+        <span className="welcome-message">Welcome , username</span>
       </div>
       <div className="nav-right">
         <button className="icon-button write-button" onClick={handleWriteClick}>
@@ -109,7 +128,7 @@ const Navbar = () => {
               >
                 Profile
               </button>
-              <button className="dropdown-item">Logout</button>
+              <button onClick={logout} className="dropdown-item">Logout</button>
             </div>
           )}
         </div>
