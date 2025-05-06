@@ -78,7 +78,8 @@ export const signUp = async function signUp(req, res) {
       if (!userExist) {
         return res.status(400).json({ message: "User not found" });
       }
-  
+
+      const id = userExist._id
       const ispassMatch = await bcrypt.compare(password, userExist.password);
   
       if (!ispassMatch) {
@@ -89,10 +90,10 @@ export const signUp = async function signUp(req, res) {
         expiresIn: "24h",
       });
 
-      res.status(200).json({ message: "Logged in success" ,token});
+      res.status(200).json({ message: "Logged in success" ,token,id});
   
     } catch (err) {
-      
+
       // console.log(err);
       res.status(400).json({ error: err });
     }

@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
 
         cb(null,Date.now()+ "-" +file.originalname)
 
-       
+       console.log("hello muklter here")
         
     }
     

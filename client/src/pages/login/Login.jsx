@@ -34,6 +34,8 @@ const Login = () => {
         
         localStorage.setItem('token',response.data.token)
 
+        localStorage.setItem("id",response.data.id)
+        
         toast.success("Login successful! Redirecting to home...", {
           position: "top-center",
           autoClose: 3000,
