@@ -56,6 +56,9 @@ const Navbar = () => {
     }, []); 
 
 
+    localStorage.setItem('username',username)
+
+
   return (
     <nav className="navbar">
       <div className="nav-left">

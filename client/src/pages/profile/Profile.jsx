@@ -1,45 +1,66 @@
-import { useNavigate } from 'react-router-dom';
-import './Profile.css';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Profile.css";
+import axios from "axios";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const [blogs, setBlogs] = useState([]);
 
-  const dummyBlogs = [
-    {
-      username: "John Doe",
-      title: "Exploring the Cosmos",
-      imageUrl: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      description: "A journey through the stars and galaxies",
-    },
-    {
-      username: "Jane Smith",
-      title: "Healthy Living Tips",
-      imageUrl: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      description: "Simple ways to stay fit and active",
-    },
-    {
-        username: "Jane Smith",
-        title: "Healthy Living Tips",
-        imageUrl: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        description: "Simple ways to stay fit and active",
-      },
-      
-  ];
-  
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const id = localStorage.getItem("id");
+        if (!id) {
+          console.error("No user ID found in localStorage");
+          setBlogs([]);
+          return;
+        }
+
+        const response = await axios.get("http://localhost:3000/api/loadblogs");
+        console.log("API Response:", response.data);
+
+        // Filter blogs by userid and map to UI fields
+        const filteredBlogs = (response.data.blogs.reverse() || [])
+          .filter(blog => blog.userid === id)
+          .map(blog => ({
+            username: blog.username || "Unknown",
+            title: blog.description || "Untitled",
+            imageUrl: blog.blog?.[0]
+              ? `http://localhost:3000/${blog.blog[0]}`
+              : "https://via.placeholder.com/150x100?text=Image+Not+Found",
+            description: blog.description || ""
+          }));
+
+        console.log("Filtered blogs:", filteredBlogs);
+        setBlogs(filteredBlogs);
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Failed to load blogs:", errorMessage);
+        setBlogs([]);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const handleSignOut = () => {
-    // Add sign-out logic here (e.g., clear auth token, redirect)
-    navigate('/');
+    localStorage.removeItem("id");
+    navigate("/");
   };
 
   const handleEditProfile = () => {
-    // Add edit profile logic or navigation here
-    alert('Edit Profile functionality to be implemented');
+    alert("Edit Profile functionality to be implemented");
   };
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate("/");
   };
+
+
+  
+
+
 
   return (
     <div className="profile-page">
@@ -50,7 +71,7 @@ const Profile = () => {
             alt="Profile"
             className="profile-pic-large"
           />
-          <h1 className="profile-name">John Doe</h1>
+          <h1 className="profile-name">{localStorage.getItem("username")}</h1>
           <p className="profile-bio">Passionate blogger sharing insights on life and the universe.</p>
           <div className="profile-actions">
             <button className="action-button edit-button" onClick={handleEditProfile}>
@@ -68,14 +89,21 @@ const Profile = () => {
       <div className="blogs-section">
         <h2 className="section-title">Your Blogs</h2>
         <div className="blogs-container">
-          {dummyBlogs.length > 0 ? (
-            dummyBlogs.map((blog, index) => (
+          {blogs.length > 0 ? (
+            blogs.map((blog, index) => (
               <div key={index} className="blog-card">
-                <img src={blog.imageUrl} alt={blog.title} className="blog-image" />
+                <img
+                  src={blog.imageUrl}
+                  alt={blog.title}
+                  className="blog-image"
+                  onError={(e) => {
+                    console.error(`Failed to load image: ${blog.imageUrl}`);
+                    e.target.src = "https://via.placeholder.com/150x100?text=Image+Not+Found";
+                  }}
+                />
                 <div className="blog-content">
                   <h3 className="blog-title">{blog.title}</h3>
                   <p className="blog-username">By {blog.username}</p>
-                  <p className="blog-description">{blog.description}</p>
                 </div>
               </div>
             ))

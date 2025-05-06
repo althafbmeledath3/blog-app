@@ -29,7 +29,7 @@ export const write = async function write(req,res){
 
        const {profile_pic,username} = userdata
 
-       const data = BlogSchema.create({profile_pic,blog:file.path,description,username,userid:id})
+       const data = BlogSchema.create({profile_pic,blog:file.path,description,username,userid:id,title})
 
        res.status(201).json({message:"Post Uploaded Successfully"})
        

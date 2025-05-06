@@ -12,7 +12,7 @@ const Home = () => {
       try {
         const response = await axios.get("http://localhost:3000/api/loadblogs");
         console.log(response.data.blogs[0].blog)//this is the array
-        const newBlogs = response.data.blogs || [];
+        const newBlogs = response.data.blogs.reverse() || [];
 
         // Update only if blogs are different to avoid re-renders
         setBlogs((prevBlogs) => {
@@ -72,7 +72,7 @@ const Home = () => {
                 <h2 className="blog-title1">{blog.title}</h2>
                 <p className="blog-description1">{blog.description}</p>
                 <div className="blog-actions">
-                  <span className="blog-date">Unknown date</span>
+                  <span className="blog-date">20/04/2025</span>
                   <button
                     className="like-button"
                     onClick={() => handleLike(index)}
