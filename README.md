@@ -8,3 +8,8 @@ step 2 : type "npm i" in the terminal.
 
 step 3 : type "npm run dev" in the terminal.
 
+step 4 : "cd server " to enter the server
+
+step 5 : type "npm i" to install pacakages
+
+step 6 : type "npm start" to start the server
