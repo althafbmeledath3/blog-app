@@ -8,12 +8,13 @@ import nodemailer from "nodemailer"
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
-  secure: false, // true for port 465, false for other ports
+  secure: false,
   auth: {
     user: "c02c2fd894074a",
     pass: "e21d18254c39d7",
   },
 });
+
 
 
 export const signUp = async function signUp(req, res) {
@@ -22,7 +23,6 @@ export const signUp = async function signUp(req, res) {
    
     try {
         
-      // Check if file was uploaded
 
       if (!req.file) {
         return res.status(400).json({ message: "Profile picture is required" });
@@ -37,7 +37,6 @@ export const signUp = async function signUp(req, res) {
   
       const hashed_pwd = await bcrypt.hash(password, 10);
   
-      // Create the user in the database
       const data = await userSchema.create({
         profile_pic,
         username,
@@ -59,7 +58,6 @@ export const signUp = async function signUp(req, res) {
     } 
     
     catch (err) {
-      // console.error("Error in creating user:", err);
       res.status(400).json({ message: "Error in creating user", error: err.message });
     }
 
@@ -74,7 +72,6 @@ export const signUp = async function signUp(req, res) {
   
       const userExist = await userSchema.findOne({ email });
   
-      //check use exist or not
       if (!userExist) {
         return res.status(400).json({ message: "User not found" });
       }
@@ -94,7 +91,6 @@ export const signUp = async function signUp(req, res) {
   
     } catch (err) {
 
-      // console.log(err);
       res.status(400).json({ error: err });
     }
   };
@@ -103,7 +99,7 @@ export const signUp = async function signUp(req, res) {
 
 export const getuser = async function getuser(req,res) {
 
-  console.log("Inside getuser")
+  // console.log("Inside getuser")
 
   const id = req.params.id
 
@@ -115,5 +111,53 @@ export const getuser = async function getuser(req,res) {
   res.status(200).json(data)
 
 }
+
+
+
+export const editprofile = async function editprofile(req, res) {
+  console.log("hello from editprofile");
+
+  try {
+    const { id } = req.params; 
+    const { username, email } = req.body;
+
+  
+    if (!username || !email) {
+      return res.status(400).json({ message: "Username and email are required" });
+    }
+
+   
+    const updateData = {
+      username,
+      email,
+    };
+
+    if (req.file) {
+      updateData.profile_pic = req.file.path; 
+    }
+
+   
+    const updatedUser = await userSchema.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (err) {
+    console.error("Error in updating profile:", err);
+    res.status(400).json({ message: "Error in updating profile", error: err.message });
+  }
+};
+
+
+
+
+
+
 
 

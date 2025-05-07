@@ -65,3 +65,28 @@ export async function loadblogs(req,res){
         return res.status(500).json({message:"Sever side error"})
     }
 }
+
+
+
+export async function deleteblog(req, res) {
+    console.log("Hello");
+
+    try {
+       
+        const { id } = req.params;
+
+        console.log(id)
+        
+        const blog = await BlogSchema.findByIdAndDelete(id);
+
+        if (blog) {
+            return res.status(200).json({ message: "Blog deleted successfully" });
+        } else {
+            return res.status(404).json({ message: "Blog not found" });
+        }
+
+    } catch (error) {
+        console.error("Error deleting blog:", error);
+        return res.status(500).json({ message: "Server-side error" });
+    }
+}

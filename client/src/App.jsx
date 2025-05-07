@@ -3,59 +3,42 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
-import {Routes,Route,BrowserRouter} from "react-router-dom"
+import { Routes, Route, BrowserRouter, useLocation } from 'react-router-dom';
 import Home from './components/home/Home';
 import Profile from './pages/profile/Profile';
 import Signup from './pages/signup/signup';
 import Login from './pages/login/Login';
 import WriteBlog from './pages/write-section/write';
 import axios from 'axios';
-
-
-
+import EditProfile from './pages/editprofile/editprofile';
 function App() {
+  
+  function MainLayout() {
+    const location = useLocation();
+   
+    const hideNavbarRoutes = ['/login', '/signup'];
 
-  // async function loadhome(){
+    return (
+      <>
+        {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/write" element={<WriteBlog />} />
+          <Route path="/editprofile" element={<EditProfile />} />
 
-  //   const response = await axios.get('http://localhost:3000/api/loadhome')
+        </Routes>
+      </>
+    );
+  }
 
-  //   console.log(response)
-
-  // }
-
-  // loadhome()
- 
   return (
-
-    <>
-
     <BrowserRouter>
-    
-      <Navbar />
-
-      <Routes>
-
-        <Route path="/" element={<Home/>} />
-        
-        <Route path="/profile" Component={Profile} />
-
-        <Route path='/signup' Component={Signup}/>
-
-        <Route path='/login' Component={Login}/>
-
-        <Route path='/write' Component={WriteBlog}/>
-      </Routes>
-
+      <MainLayout />
     </BrowserRouter>
-
-    </>
   );
 }
 
 export default App;
-
-
-
-
-
-

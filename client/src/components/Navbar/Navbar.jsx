@@ -41,12 +41,17 @@ const Navbar = () => {
 
   const [username, setUsername] = useState("");
 
+  const [profile,setProfile] = useState()
+
     useEffect(() => {
       async function getuser() {
         const id = localStorage.getItem('id');
         try {
           const response = await axios.get(`http://localhost:3000/api/getuser/${id}`);
           setUsername(response.data.username); 
+         
+
+         setProfile(`http://localhost:3000/${response.data.profile_pic}`)
         } catch (error) {
           console.error("Failed to fetch user:", error);
         }
@@ -120,7 +125,7 @@ const Navbar = () => {
 
         <div className="profile-container" ref={dropdownRef}>
           <img
-            src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg"
+            src={profile}
             alt="Profile"
             className="profile-pic"
             onClick={handleProfileClick}
